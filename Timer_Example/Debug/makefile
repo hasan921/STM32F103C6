@@ -62,7 +62,7 @@ main-build: Timer_Example.elf secondary-outputs
 
 # Tool invocations
 Timer_Example.elf: $(OBJS) $(USER_OBJS) C:\Users\WIN8\Desktop\STM32F103C6_Examples\Timer_Example\STM32F103C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Timer_Example.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\WIN8\Desktop\STM32F103C6_Examples\Timer_Example\STM32F103C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Timer_Example.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "Timer_Example.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\WIN8\Desktop\STM32F103C6_Examples\Timer_Example\STM32F103C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Timer_Example.map" -Wl,--gc-sections -static -gdwarf-2 --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
