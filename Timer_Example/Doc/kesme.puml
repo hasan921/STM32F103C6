@@ -1,0 +1,39 @@
+@startuml
+
+floating note
+	Kullanacagin her degiskeni yazmadim. Sadece
+	kesinlikle lazim oldugunu dusundugum tanimlari
+	belirttim. Bunlarin haricinde ne lazimsa sen 
+	eklersin.
+	
+	**Modul tanimlamalari**
+	//#define DISPLAY_LED_SAYISI (2)//
+	unsigned int current_display;
+	unsigned int new_value;
+end note
+
+partition "Kesme Fonksiyonu" {
+	start
+    note left
+        Bu kesme fonksiyonu 
+        her 10 msde bir timer 
+        tarafindan tetiklenecek
+        
+        Bu fonksiyon icinde asagidaki degisken tanimi lazim. 
+        **static** unsigned int value_to_display; 
+    end note
+	if (current_display == DISPLAY_LED_SAYISI) then (yes)
+		:value_to_display = new_value;
+		:sevenSeg_selectDisplay(Tenth);;
+		:sevenSeg_printDisplay(value_to_display / 10);;
+	else (no)
+		:sevenSeg_selectDisplay(Units);;
+		:sevenSeg_printDisplay(value_to_display % 10);;
+	endif 
+	:current_display--;;
+	if (current_display == 0) then (0)
+		:current_display = DISPLAY_LED_SAYISI;; 
+	endif
+	stop
+}
+@enduml
