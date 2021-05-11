@@ -21,6 +21,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_it.h"
+#include "sevenSeg_display.h"
+#define DISPLAY_LED_SAYISI (2)
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -57,6 +59,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim1;
+
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -205,8 +208,26 @@ void SysTick_Handler(void)
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-  //  sevenSeg_fromInterrupt();
-    HAL_GPIO_TogglePin(LED_1_GPIO_Port, LED_1_Pin);
+  static unsigned int value_to_display;
+  unsigned int current_display;
+
+ current_display=0;
+  if(current_display==DISPLAY_LED_SAYISI)
+   {
+       tens_digit();
+       sevenSeg_printDisplay(value_to_display/10);
+   }
+   else
+   {
+       unit_digit();
+       sevenSeg_printDisplay(value_to_display%10);
+   }
+    current_display--;
+   if (0 == current_display)
+    {
+        current_display = DISPLAY_LED_SAYISI ;
+    }
+   value_to_display++;
   /* USER CODE END TIM1_UP_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
