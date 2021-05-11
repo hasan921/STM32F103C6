@@ -211,7 +211,7 @@ void TIM1_UP_IRQHandler(void)
   static unsigned int value_to_display;
   unsigned int current_display;
 
- current_display=0;
+ current_display=2;
   if(current_display==DISPLAY_LED_SAYISI)
    {
        tens_digit();
