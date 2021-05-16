@@ -5,20 +5,61 @@
  *      Author: WIN8
  */
 #include "main.h"
-#include "stm32f1xx_it.h"
-unsigned int current_diplay;
-unsigned int new_value ;
+#include "sevenSeg_display.h"
 
-void unit_digit(void)
+#define DISPLAY_LED_SAYISI (2)
+
+/*****************************************************************************
+ ***** Local Variable Declarations                                       *****
+ *****************************************************************************/
+static unsigned int new_value = 0;
+
+/*****************************************************************************
+ ***** Local Function Declarations                                       *****
+ *****************************************************************************/
+static void unit_digit(void);
+static void tens_digit(void);
+
+
+/*****************************************************************************
+ ***** Local Function Implementations                                    *****
+ *****************************************************************************/
+static void unit_digit(void)
 {
     HAL_GPIO_WritePin(DISPLAY_1_GPIO_Port, DISPLAY_1_Pin, RESET);
     HAL_GPIO_WritePin(DISPLAY_2_GPIO_Port, DISPLAY_2_Pin, SET);
 }
 
-void tens_digit(void)
+static void tens_digit(void)
 {
-    HAL_GPIO_WritePin(DISPLAY_1_GPIO_Port, DISPLAY_1_Pin, SET);
     HAL_GPIO_WritePin(DISPLAY_2_GPIO_Port, DISPLAY_2_Pin, RESET);
+    HAL_GPIO_WritePin(DISPLAY_1_GPIO_Port, DISPLAY_1_Pin, SET);
+}
+
+/*****************************************************************************
+ ***** Public Function Implementations                                   *****
+ *****************************************************************************/
+void sevenSeg_interruptHandler(void)
+{
+    static unsigned int current_display = 2;
+    unsigned int value_to_display = new_value;
+
+    if(current_display == DISPLAY_LED_SAYISI)
+     {
+         tens_digit();
+         sevenSeg_printDisplay(value_to_display/10);
+     }
+     else
+     {
+         unit_digit();
+         sevenSeg_printDisplay(value_to_display%10);
+     }
+     current_display--;
+     if (0 == current_display)
+      {
+          current_display = DISPLAY_LED_SAYISI ;
+          new_value++;
+      }
 }
 
 void sevenSeg_printDisplay(unsigned int a)
