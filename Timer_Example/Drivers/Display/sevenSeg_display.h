@@ -8,8 +8,7 @@
 #ifndef DISPLAY_SEVENSEG_DISPLAY_H_
 #define DISPLAY_SEVENSEG_DISPLAY_H_
 
-void unit_digit(void);
-void tens_digit(void);
 void sevenSeg_printDisplay(unsigned int);
+void sevenSeg_interruptHandler(void);
 
 #endif /* DISPLAY_SEVENSEG_DISPLAY_H_ */
