@@ -56,7 +56,7 @@ static void MX_TIM1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+ extern unsigned int new_value ;
 /* USER CODE END 0 */
 
 /**
@@ -91,13 +91,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
-
+  unit_digit();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
-
+    new_value = new_value + 2;
+    HAL_Delay(100);
     /* USER CODE BEGIN 3 */
 
   }

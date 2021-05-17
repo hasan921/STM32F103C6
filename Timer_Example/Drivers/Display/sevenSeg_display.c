@@ -12,7 +12,7 @@
 /*****************************************************************************
  ***** Local Variable Declarations                                       *****
  *****************************************************************************/
-static unsigned int new_value = 0;
+ unsigned int new_value = 0;
 
 /*****************************************************************************
  ***** Local Function Declarations                                       *****
@@ -26,14 +26,15 @@ static void tens_digit(void);
  *****************************************************************************/
 static void unit_digit(void)
 {
-    HAL_GPIO_WritePin(DISPLAY_1_GPIO_Port, DISPLAY_1_Pin, RESET);
     HAL_GPIO_WritePin(DISPLAY_2_GPIO_Port, DISPLAY_2_Pin, SET);
+    HAL_GPIO_WritePin(DISPLAY_1_GPIO_Port, DISPLAY_1_Pin, RESET);
 }
 
 static void tens_digit(void)
 {
-    HAL_GPIO_WritePin(DISPLAY_2_GPIO_Port, DISPLAY_2_Pin, RESET);
     HAL_GPIO_WritePin(DISPLAY_1_GPIO_Port, DISPLAY_1_Pin, SET);
+    HAL_GPIO_WritePin(DISPLAY_2_GPIO_Port, DISPLAY_2_Pin,RESET);
+
 }
 
 /*****************************************************************************
@@ -42,7 +43,7 @@ static void tens_digit(void)
 void sevenSeg_interruptHandler(void)
 {
     static unsigned int current_display = 2;
-    unsigned int value_to_display = new_value;
+    static unsigned int value_to_display = 0;
 
     if(current_display == DISPLAY_LED_SAYISI)
      {
@@ -58,7 +59,8 @@ void sevenSeg_interruptHandler(void)
      if (0 == current_display)
       {
           current_display = DISPLAY_LED_SAYISI ;
-          new_value++;
+
+          value_to_display = new_value;
       }
 }
 
