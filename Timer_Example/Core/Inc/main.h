@@ -76,8 +76,12 @@ void Error_Handler(void);
 #define DISPLAY_1_GPIO_Port GPIOB
 #define DISPLAY_2_Pin GPIO_PIN_1
 #define DISPLAY_2_GPIO_Port GPIOB
+#define DISPLAY_3_Pin GPIO_PIN_2
+#define DISPLAY_3_GPIO_Port GPIOB
 #define LED_1_Pin GPIO_PIN_15
 #define LED_1_GPIO_Port GPIOA
+#define DISPLAY_4_Pin GPIO_PIN_3
+#define DISPLAY_4_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "sevenSeg_display.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -91,14 +90,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
-  unit_digit();
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
-    new_value = new_value + 2;
-    HAL_Delay(100);
+    new_value++;
+    HAL_Delay(200);
     /* USER CODE BEGIN 3 */
 
   }
@@ -163,7 +162,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 3199;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 200;
+  htim1.Init.Period = 500;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -206,7 +205,7 @@ static void MX_GPIO_Init(void)
                           |SEG_E_Pin|SEG_F_Pin|SEG_G_Pin|LED_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DISPLAY_1_Pin|DISPLAY_2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DISPLAY_1_Pin|DISPLAY_2_Pin|DISPLAY_3_Pin|DISPLAY_4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : SEG_A_Pin SEG_B_Pin SEG_C_Pin SEG_D_Pin
                            SEG_E_Pin SEG_F_Pin SEG_G_Pin LED_1_Pin */
@@ -217,8 +216,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DISPLAY_1_Pin DISPLAY_2_Pin */
-  GPIO_InitStruct.Pin = DISPLAY_1_Pin|DISPLAY_2_Pin;
+  /*Configure GPIO pins : DISPLAY_1_Pin DISPLAY_2_Pin DISPLAY_3_Pin DISPLAY_4_Pin */
+  GPIO_InitStruct.Pin = DISPLAY_1_Pin|DISPLAY_2_Pin|DISPLAY_3_Pin|DISPLAY_4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
