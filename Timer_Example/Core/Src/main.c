@@ -31,6 +31,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+RTC_TimeTypeDef sTime;
+RTC_DateTypeDef DateToUpdate ;
+uint8_t saat ;
+uint8_t dakika ;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -39,6 +43,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+RTC_HandleTypeDef hrtc;
+
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
@@ -49,13 +55,14 @@ TIM_HandleTypeDef htim1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
- extern unsigned int new_value ;
+//extern unsigned int new_value ;
 /* USER CODE END 0 */
 
 /**
@@ -87,6 +94,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM1_Init();
+  MX_RTC_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
@@ -96,9 +104,16 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    new_value++;
-    HAL_Delay(200);
+
     /* USER CODE BEGIN 3 */
+      HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+      saat = sTime.Hours;
+      dakika = sTime.Minutes;
+      HAL_GPIO_WritePin(LED_Pin_GPIO_Port, LED_Pin_Pin,SET);
+      HAL_Delay(500);
+      HAL_GPIO_WritePin(LED_Pin_GPIO_Port, LED_Pin_Pin,RESET);
+      HAL_Delay(500);
+
 
   }
   /* USER CODE END 3 */
@@ -112,11 +127,13 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -139,6 +156,69 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+
+  /* USER CODE END RTC_Init 0 */
+
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef DateToUpdate = {0};
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+  /** Initialize RTC Only
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
+  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_ALARM;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /* USER CODE BEGIN Check_RTC_BKUP */
+
+  /* USER CODE END Check_RTC_BKUP */
+
+  /** Initialize RTC and set the Time and Date
+  */
+  sTime.Hours = 13;
+  sTime.Minutes = 44;
+  sTime.Seconds = 50;
+
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  DateToUpdate.WeekDay = RTC_WEEKDAY_TUESDAY;
+  DateToUpdate.Month = RTC_MONTH_JUNE;
+  DateToUpdate.Date = 1;
+  DateToUpdate.Year = 21;
+
+  if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+  /* USER CODE END RTC_Init 2 */
+
 }
 
 /**
@@ -162,7 +242,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 3199;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 500;
+  htim1.Init.Period = 50;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -197,31 +277,32 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, SEG_A_Pin|SEG_B_Pin|SEG_C_Pin|SEG_D_Pin
-                          |SEG_E_Pin|SEG_F_Pin|SEG_G_Pin|LED_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, DISPLAY_4_Pin|Pin_A_Pin|Pin_B_Pin|Pin_C_Pin
+                          |Pin_D_Pin|DISPLAY_3_Pin|DISPLAY_2_Pin|DISPLAY_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DISPLAY_1_Pin|DISPLAY_2_Pin|DISPLAY_3_Pin|DISPLAY_4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED_Pin_Pin|LED_1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : SEG_A_Pin SEG_B_Pin SEG_C_Pin SEG_D_Pin
-                           SEG_E_Pin SEG_F_Pin SEG_G_Pin LED_1_Pin */
-  GPIO_InitStruct.Pin = SEG_A_Pin|SEG_B_Pin|SEG_C_Pin|SEG_D_Pin
-                          |SEG_E_Pin|SEG_F_Pin|SEG_G_Pin|LED_1_Pin;
+  /*Configure GPIO pins : DISPLAY_4_Pin Pin_A_Pin Pin_B_Pin Pin_C_Pin
+                           Pin_D_Pin DISPLAY_3_Pin DISPLAY_2_Pin DISPLAY_1_Pin */
+  GPIO_InitStruct.Pin = DISPLAY_4_Pin|Pin_A_Pin|Pin_B_Pin|Pin_C_Pin
+                          |Pin_D_Pin|DISPLAY_3_Pin|DISPLAY_2_Pin|DISPLAY_1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LED_Pin_Pin LED_1_Pin */
+  GPIO_InitStruct.Pin = LED_Pin_Pin|LED_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : DISPLAY_1_Pin DISPLAY_2_Pin DISPLAY_3_Pin DISPLAY_4_Pin */
-  GPIO_InitStruct.Pin = DISPLAY_1_Pin|DISPLAY_2_Pin|DISPLAY_3_Pin|DISPLAY_4_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
